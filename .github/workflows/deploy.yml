@@ -188,6 +188,9 @@ jobs:
       HOSTNAME: solar.dremer10.com
       TLS_SECRET: solar-system-prod-tls
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Install kubectl
       uses: azure/setup-kubectl@v4
 
@@ -231,6 +234,9 @@ jobs:
       HOSTNAME: solar-dev.dremer10.com
       TLS_SECRET: solar-dev-tls
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Install kubectl
       uses: azure/setup-kubectl@v4
 
