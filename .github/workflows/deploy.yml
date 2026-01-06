@@ -2,6 +2,7 @@ name: Build Scan Deploy
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 env:
@@ -14,6 +15,7 @@ permissions:
 jobs:
   build:
     name: Build
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.meta.outputs.branch }}
@@ -33,7 +35,7 @@ jobs:
 
   push-prod:
     name: Push Production Image
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build
     outputs:
@@ -101,7 +103,7 @@ jobs:
 
   push-dev:
     name: Push Dev Image
-    if: github.ref != 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build
     outputs:
@@ -134,6 +136,7 @@ jobs:
 
   test:
     name: Test
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -146,7 +149,7 @@ jobs:
 
   scan-prod:
     name: Scan Prod Image
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: push-prod
     env:
@@ -162,7 +165,7 @@ jobs:
 
   scan-dev:
     name: Scan Dev Image
-    if: github.ref != 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: push-dev
     env:
@@ -178,7 +181,7 @@ jobs:
 
   deploy-prod:
     name: Deploy Production
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [push-prod, scan-prod, test]
     env:
@@ -224,7 +227,7 @@ jobs:
 
   deploy-dev:
     name: Deploy Dev
-    if: github.ref != 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [push-dev, scan-dev, test]
     env:
@@ -267,3 +270,22 @@ jobs:
         envsubst < k8s/solar-system-prod.yaml | kubectl apply -f -
         kubectl rollout status deployment/solar-system -n "${NAMESPACE}"
         kubectl get ingress -n "${NAMESPACE}"
+
+  pr-validate:
+    name: PR Validate (build + trivy fs)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Install dependencies
+      run: npm ci
+    - name: Test (build smoke test)
+      run: npm run build
+    - name: Scan repo (Trivy fs)
+      uses: aquasecurity/trivy-action@0.24.0
+      with:
+        scan-type: fs
+        scanners: vuln,secret
+        ignore-unfixed: true
+        format: table
