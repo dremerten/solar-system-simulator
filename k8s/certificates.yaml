@@ -1,0 +1,27 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: solar-prod-cert
+  namespace: nginx-gateway
+spec:
+  secretName: solar-system-prod-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-gateway
+  dnsNames:
+  - solar.dremer10.com
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: solar-dev-cert
+  namespace: nginx-gateway
+spec:
+  secretName: solar-dev-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-gateway
+  dnsNames:
+  - solar-dev.dremer10.com
