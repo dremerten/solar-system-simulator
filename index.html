@@ -470,27 +470,6 @@
       border-radius: 2px;
     }
 
-    /* Special Events Panel - positioned directly below Celestial Bodies panel */
-    #specialEventsControls {
-      position: absolute;
-      right: 15px; /* Initial position, will be updated by JavaScript */
-      left: auto;
-      top: 380px; /* Initial position, will be updated by JavaScript */
-      background: var(--panel-bg);
-      color: var(--nasa-white);
-      border-radius: 6px;
-      border: 1px solid var(--panel-border);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(11, 61, 145, 0.3);
-      min-width: 180px;
-      max-height: 450px;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      font-size: 11px;
-      font-family: 'Titillium Web', sans-serif;
-    }
-
     /* UI Hide/Show functionality */
     .ui-hidden {
       opacity: 0;
@@ -1102,37 +1081,6 @@
     </div>
   </div>
   
-  <!-- Special Events Panel -->
-  <div class="controls collapsed" id="specialEventsControls">
-    <div class="control-header" onclick="toggleSpecialEventsPanel()">
-      <h3>Special Events <span class="control-toggle-icon">►</span></h3>
-    </div>
-    <div class="control-content">
-      <div class="control-group">
-        <h4 style="margin: 5px 0; color: var(--star-gold);">Eclipse Tours</h4>
-        <button id="solarEclipseTour" class="tour-btn" style="width: 100%; margin-bottom: 8px;">
-          🌑 Solar Eclipse Tour
-        </button>
-        <button id="lunarEclipseTour" class="tour-btn" style="width: 100%;">
-          🌙 Lunar Eclipse Tour
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <div class="info">
-    <strong style="font-family: 'Orbitron', monospace; color: var(--star-gold);">NASA SOLAR EXPLORER</strong><br>
-    🪐 8 Planets<br>
-    🌍 11 Dwarf Planets<br>
-    ☄️ 4 Asteroid Belts<br>
-    🌌 Trans-Neptunian Objects<br>
-    🙀 50+ Moons<br>
-    ✨ Glowing Orbit Rings<br>
-    🎵 Atmospheric Music<br>
-    🛰️ Real-time NASA Data<br>
-    <button id="followSunBtn" class="follow-sun-btn">☀️ Follow Sun</button>
-  </div>
-  
   <div class="celestial-panel collapsed" id="celestialPanel">
     <div class="celestial-header" onclick="toggleCelestialPanel()">
       <h4>Celestial Bodies <span class="toggle-icon">►</span></h4>
@@ -1280,8 +1228,6 @@
       const icon = panel.querySelector('.toggle-icon');
       panel.classList.toggle('collapsed');
       icon.textContent = panel.classList.contains('collapsed') ? '►' : '▼';
-      updateSpecialEventsPanelPosition();
-      setTimeout(updateSpecialEventsPanelPosition, 350);
     }
 
     function toggleControlPanel() {
@@ -1290,39 +1236,6 @@
       panel.classList.toggle('collapsed');
       icon.textContent = panel.classList.contains('collapsed') ? '►' : '▼';
     }
-
-    function toggleSpecialEventsPanel() {
-      const panel = document.getElementById('specialEventsControls');
-      const icon = panel.querySelector('.control-toggle-icon');
-      panel.classList.toggle('collapsed');
-      icon.textContent = panel.classList.contains('collapsed') ? '►' : '▼';
-      updateSpecialEventsPanelPosition();
-    }
-
-    function updateSpecialEventsPanelPosition() {
-      const celestialPanel = document.getElementById('celestialPanel');
-      const specialEventsPanel = document.getElementById('specialEventsControls');
-      if (!celestialPanel || !specialEventsPanel) return;
-
-      const celestialRect = celestialPanel.getBoundingClientRect();
-      const isCollapsed = celestialPanel.classList.contains('collapsed');
-      const celestialLeft = celestialRect.left + window.scrollX;
-      const celestialWidth = celestialRect.width;
-
-      const celestialTop = celestialRect.top + window.scrollY;
-      const celestialHeight = celestialRect.height;
-      const topPosition = isCollapsed
-        ? celestialRect.bottom + window.scrollY + 5
-        : celestialTop + celestialHeight * 0.6 + 15;
-
-      specialEventsPanel.style.top = `${topPosition}px`;
-      specialEventsPanel.style.left = `${celestialLeft}px`;
-      specialEventsPanel.style.width = `${celestialWidth}px`;
-      specialEventsPanel.style.right = 'auto';
-    }
-
-    window.addEventListener('load', updateSpecialEventsPanelPosition);
-    window.addEventListener('resize', updateSpecialEventsPanelPosition);
   </script>
 </body>
 </html>
