@@ -1752,6 +1752,12 @@ if (hideUIBtn && showUIBtn && uiControls) {
     if (infoPanel) infoPanel.classList.remove('ui-hidden');
     showUIBtn.style.display = 'none';
   });
+
+  // Start with UI hidden so the scene is unobstructed on load
+  uiControls.classList.add('ui-hidden');
+  if (celestialPanel) celestialPanel.classList.add('ui-hidden');
+  if (infoPanel) infoPanel.classList.add('ui-hidden');
+  showUIBtn.style.display = 'block';
 }
 
 let isBloomManual = false;
@@ -2604,7 +2610,7 @@ function startEclipseTour() {
   }
   
   // Hide all UI elements during tour for cinematic experience
-  const uiEls = document.querySelectorAll('.controls, .celestial-panel, .info, #planetInfoCard, #showUIBtn');
+  const uiEls = document.querySelectorAll('.controls, .celestial-panel, #planetInfoCard, #showUIBtn');
   uiEls.forEach(el => {
     if (el) {
       el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
@@ -2817,7 +2823,7 @@ function stopEclipseTour() {
   }
   
   // Restore UI elements
-  const uiEls = document.querySelectorAll('.controls, .celestial-panel, .info, #planetInfoCard, #showUIBtn');
+  const uiEls = document.querySelectorAll('.controls, .celestial-panel, #planetInfoCard, #showUIBtn');
   uiEls.forEach(el => {
     if (el) {
       el.style.opacity = '1';
