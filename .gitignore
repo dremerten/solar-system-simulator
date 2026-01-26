@@ -26,3 +26,4 @@ Desktop.ini
 coverage/
 *.local
 .codex-memory.txt
+k8s-1.28-manifests
