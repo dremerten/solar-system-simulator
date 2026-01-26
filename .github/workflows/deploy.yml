@@ -221,9 +221,10 @@ jobs:
         TLS_SECRET: ${{ env.TLS_SECRET }}
       run: |
         kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
-        envsubst < k8s/solar-system-prod.yaml | kubectl apply -f -
+        kubectl apply -f k8s-1.35-manifests/certificates.yaml
+        envsubst < k8s-1.35-manifests/solar-system-dev.yaml | kubectl apply -f -
         kubectl rollout status deployment/solar-system -n "${NAMESPACE}"
-        kubectl get ingress -n "${NAMESPACE}"
+        kubectl get httproute -n "${NAMESPACE}" solar-system
 
   deploy-dev:
     name: Deploy Dev
@@ -267,9 +268,10 @@ jobs:
         TLS_SECRET: ${{ env.TLS_SECRET }}
       run: |
         kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
-        envsubst < k8s/solar-system-prod.yaml | kubectl apply -f -
+        kubectl apply -f k8s-1.35-manifests/certificates.yaml
+        envsubst < k8s-1.35-manifests/solar-system-prod.yaml | kubectl apply -f -
         kubectl rollout status deployment/solar-system -n "${NAMESPACE}"
-        kubectl get ingress -n "${NAMESPACE}"
+        kubectl get httproute -n "${NAMESPACE}" solar-system
 
   pr-validate:
     name: PR Validate (build + trivy fs)
