@@ -37,6 +37,7 @@ jobs:
     name: Push Production Image
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: production
     needs: build
     outputs:
       image_tag: ${{ steps.tag.outputs.tag }}
@@ -105,6 +106,7 @@ jobs:
     name: Push Dev Image
     if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: staging
     needs: build
     outputs:
       image_tag: ${{ steps.tag.outputs.image_tag }}
@@ -183,10 +185,11 @@ jobs:
     name: Deploy Production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: production
     needs: [push-prod, scan-prod, test]
     env:
       IMAGE_TAG: ${{ needs.push-prod.outputs.image_tag }}
-      NAMESPACE: solar-system-prod
+      NAMESPACE: solar-production
       HOSTNAME: solar.dremer10.com
       TLS_SECRET: solar-system-prod-tls
     steps:
@@ -198,7 +201,7 @@ jobs:
 
     - name: Write kubeconfig
       env:
-        KUBECONFIG_B64: ${{ secrets.KUBECONFIG }}
+        KUBECONFIG_B64: ${{ secrets.KUBECONFIG_PRODUCTION }}
       run: |
         mkdir -p $HOME/.kube
         if [ -z "$KUBECONFIG_B64" ]; then
@@ -230,10 +233,11 @@ jobs:
     name: Deploy Dev
     if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: staging
     needs: [push-dev, scan-dev, test]
     env:
       IMAGE_TAG: ${{ needs.push-dev.outputs.image_tag }}
-      NAMESPACE: solar-dev
+      NAMESPACE: solar-staging
       HOSTNAME: solar-dev.dremer10.com
       TLS_SECRET: solar-dev-tls
     steps:
@@ -245,7 +249,7 @@ jobs:
 
     - name: Write kubeconfig
       env:
-        KUBECONFIG_B64: ${{ secrets.KUBECONFIG }}
+        KUBECONFIG_B64: ${{ secrets.KUBECONFIG_STAGING }}
       run: |
         mkdir -p $HOME/.kube
         if [ -z "$KUBECONFIG_B64" ]; then
